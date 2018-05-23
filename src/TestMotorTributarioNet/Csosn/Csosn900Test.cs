@@ -1,6 +1,7 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MotorTributarioNet.Flags;
 using MotorTributarioNet.Impostos.Csosns;
+using MotorTributarioNet.Util;
 using TestCalculosTributarios.Entidade;
 
 namespace TestCalculosTributarios.Csosn
@@ -95,6 +96,122 @@ namespace TestCalculosTributarios.Csosn
             Assert.AreEqual(161.64m, csosn900.ValorIcmsSt);
             Assert.AreEqual(414.00m, csosn900.ValorIcms);
             Assert.AreEqual(2300.00m, csosn900.ValorBcIcms);
+        }
+
+        [TestMethod]
+        public void Testa__Percentual12__ProdutoValor38()
+        {
+            var produto = new Produto
+            {
+                QuantidadeProduto = 1.000m,
+                ValorProduto = 38.00m,
+                PercentualIcms = 12.00m
+            };
+
+            var csosn900 = new Csosn900();
+
+            csosn900.Calcula(produto);
+
+            Assert.AreEqual(4.56m, csosn900.ValorIcms.Arredondar());
+        }
+
+        [TestMethod]
+        public void Testa__IcmsST_16Porcento()
+        {
+            var produto = new Produto
+            {
+                QuantidadeProduto = 1.000m,
+                ValorProduto = 38.00m,
+                PercentualIcms = 12.00m,
+                PercentualIcmsSt = 16.00m
+            };
+
+            var csosn900 = new Csosn900();
+
+            csosn900.Calcula(produto);
+
+            Assert.AreEqual(1.52m, csosn900.ValorIcmsSt.Arredondar());
+        }
+
+        [TestMethod]
+        public void Testa_IcmsST_ComIPI()
+        {
+            var produto = new Produto
+            {
+                QuantidadeProduto = 1.000m,
+                ValorProduto = 38.00m,
+                PercentualIcms = 12.00m,
+                PercentualIcmsSt = 16.00m,
+                PercentualIpi = 15.00m
+            };
+
+            var csosn900 = new Csosn900();
+
+            csosn900.Calcula(produto);
+
+            Assert.AreEqual(2.43m, csosn900.ValorIcmsSt.Arredondar());
+        }
+
+        [TestMethod]
+        public void Testa_IcmsST_ComIPI_ComDesconto()
+        {
+            var produto = new Produto
+            {
+                QuantidadeProduto = 1.000m,
+                ValorProduto = 38.00m,
+                PercentualIcms = 12.00m,
+                PercentualIcmsSt = 16.00m,
+                PercentualIpi = 15.00m,
+                Desconto = 2.53m
+            };
+
+            var csosn900 = new Csosn900();
+
+            csosn900.Calcula(produto);
+
+            Assert.AreEqual(2.27m, csosn900.ValorIcmsSt.Arredondar());
+        }
+
+        [TestMethod]
+        public void Testa_IcmsST_ComIPI_ComDesconto_ComMVA()
+        {
+            var produto = new Produto
+            {
+                QuantidadeProduto = 1.000m,
+                ValorProduto = 38.00m,
+                PercentualIcms = 12.00m,
+                PercentualIcmsSt = 16.00m,
+                PercentualIpi = 15.00m,
+                Desconto = 2.53m,
+                PercentualMva = 50.00m
+            };
+
+            var csosn900 = new Csosn900();
+
+            csosn900.Calcula(produto);
+
+            Assert.AreEqual(5.53m, csosn900.ValorIcmsSt.Arredondar());
+        }
+
+        [TestMethod]
+        public void Testa_IcmsST_ComIPI_ComDesconto_ComMVA_ResultadoBaseCalculoST()
+        {
+            var produto = new Produto
+            {
+                QuantidadeProduto = 1.000m,
+                ValorProduto = 38.00m,
+                PercentualIcms = 12.00m,
+                PercentualIcmsSt = 16.00m,
+                PercentualIpi = 15.00m,
+                Desconto = 2.53m,
+                PercentualMva = 50.00m
+            };
+
+            var csosn900 = new Csosn900();
+
+            csosn900.Calcula(produto);
+
+            Assert.AreEqual(61.19m, csosn900.ValorBcIcmsSt.Arredondar());
         }
     }
 }
